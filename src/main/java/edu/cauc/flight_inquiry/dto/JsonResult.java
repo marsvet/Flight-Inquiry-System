@@ -15,15 +15,19 @@ public class JsonResult<T> {
   public JsonResult() {
 	this.code = 0;
 	this.msg = "success";
+	this.data = null;
   }
 
   public JsonResult(int code, String msg) {
 	this.code = code;
 	this.msg = msg;
+	this.data = null;
   }
 
   public JsonResult(T data) {
-	this.data = data;
+	this.code = 0;
+	this.msg = "success";
+    this.data = data;
   }
 
   public JsonResult(int code, String msg, T data) {

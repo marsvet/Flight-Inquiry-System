@@ -3,6 +3,8 @@ package edu.cauc.flight_inquiry.dao;
 import edu.cauc.flight_inquiry.po.FlightInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -12,7 +14,7 @@ public interface FlightInfoDao extends JpaRepository<FlightInfo, String>, JpaSpe
 
   public List<FlightInfo> findAllByFlightNum(String flightNum);
 
-  public Optional<FlightInfo> findByAirlineId(String airlineId);
+  public List<FlightInfo> findAllByAirlineId(String airlineId);
 
   public List<FlightInfo> findAllByStartStationLike(String startStationLike);
 

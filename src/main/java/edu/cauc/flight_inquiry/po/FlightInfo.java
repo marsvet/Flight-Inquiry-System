@@ -20,8 +20,8 @@ public class FlightInfo {
   @Column(name = "flight_num")
   private String flightNum;
 
-  @Column(name = "airline_id")
-  private String airlineId;
+  @Column(name = "airline")
+  private String airline;
 
   @Column(name = "start_station")
   private String startStation;
