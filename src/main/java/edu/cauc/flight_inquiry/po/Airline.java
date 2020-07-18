@@ -34,8 +34,8 @@ public class Airline {
   @Column(name = "three_code")
   private String threeCode;
 
-  @Column(name = "type")
-  private String type;
+  @Column(name = "airline_type")
+  private String airlineType;
 
   @Column(name = "state")
   private int state;

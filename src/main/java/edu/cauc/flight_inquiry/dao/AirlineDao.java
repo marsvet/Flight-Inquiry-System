@@ -3,28 +3,16 @@ package edu.cauc.flight_inquiry.dao;
 import edu.cauc.flight_inquiry.po.Airline;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface AirlineDao extends JpaRepository<Airline, String>, JpaSpecificationExecutor<AirlineDao> {
 
-  public boolean existsByZhFullName(String zhFullName);
+  @Query(value = "SELECT * FROM airline WHERE zh_simple_name LIKE CONCAT('%', ?, '%') AND en_simple_name LIKE CONCAT('%', ?, '%') AND zh_full_name LIKE CONCAT('%', ?, '%') AND en_full_name LIKE CONCAT('%', ?, '%') AND two_code LIKE CONCAT('%', ?, '%') AND three_code LIKE CONCAT('%', ?, '%') AND airline_type LIKE CONCAT('%', ?, '%') AND state = 1 LIMIT ?, ?", nativeQuery = true)
+  public List<Airline> getAirlines(String zhSimpleName, String enSimpleName, String zhFullName, String enFullName, String twoCode, String threeCode, String airlineType, int startIndex, int pageSize);
 
-  public List<Airline> findAllByZhSimpleNameLike(String zhSimpleNameLike);
-
-  public List<Airline> findAllByEnSimpleNameLike(String enSimpleNameLike);
-
-  public Optional<Airline> findByZhFullName(String zhFullName);
-
-  public List<Airline> findAllByZhFullNameLike(String zhFullNameLike);
-
-  public List<Airline> findAllByEnFullNameLike(String enFullNameLike);
-
-  public Optional<Airline> findByTwoCode(String twoCode);
-
-  public Optional<Airline> findByThreeCode(String threeCode);
-
-  public List<Airline> findAllByType(String type);
+  @Query(value = "SELECT COUNT(*) FROM airline WHERE zh_simple_name LIKE CONCAT('%', ?, '%') AND en_simple_name LIKE CONCAT('%', ?, '%') AND zh_full_name LIKE CONCAT('%', ?, '%') AND en_full_name LIKE CONCAT('%', ?, '%') AND two_code LIKE CONCAT('%', ?, '%') AND three_code LIKE CONCAT('%', ?, '%') AND airline_type LIKE CONCAT('%', ?, '%') AND state = 1", nativeQuery = true)
+  public int getAirlinesCount(String zhSimpleName, String enSimpleName, String zhFullName, String enFullName, String twoCode, String threeCode, String airlineType);
 
 }

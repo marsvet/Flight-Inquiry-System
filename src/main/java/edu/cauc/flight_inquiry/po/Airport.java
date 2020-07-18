@@ -28,14 +28,14 @@ public class Airport {
   @Column(name = "en_full_name")
   private String enFullName;
 
-  @Column(name = "two_code")
-  private String twoCode;
-
   @Column(name = "three_code")
   private String threeCode;
 
-  @Column(name = "type")
-  private String type;
+  @Column(name = "four_code")
+  private String fourCode;
+
+  @Column(name = "airport_type")
+  private String airportType;
 
   @Column(name = "state")
   private int state;

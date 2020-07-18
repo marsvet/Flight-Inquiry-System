@@ -2,10 +2,17 @@ package edu.cauc.flight_inquiry.controller;
 
 
 import edu.cauc.flight_inquiry.dao.FlightInfoDao;
+import edu.cauc.flight_inquiry.po.Airport;
 import edu.cauc.flight_inquiry.po.FlightInfo;
+import edu.cauc.flight_inquiry.util.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.*;
 
 
@@ -42,16 +49,16 @@ public class FlightInfoController {
 
   @RequestMapping(value = "/flightInfo/search", method = RequestMethod.POST)
   public HashMap<String, Object> getFlightInfos(@RequestBody HashMap<String, Object> params) {
-	String flightNum = (String) params.get("flightNum");
-	String airline = (String) params.get("airline");
-	String startStation = (String) params.get("startStation");
-	String destStation = (String) params.get("destStation");
-	String startTime = (String) params.get("startTime");
-	String arriveTime = (String) params.get("arriveTime");
-	String planeType = (String) params.get("planeType");
-	int pageIndex = (int) params.get("pageIndex");	// 第几页
-	int pageSize = (int) params.get("pageSize");	// 每页几条数据
-	int startIndex =  pageIndex * pageSize;// mysql 数据库中 limit 的第一个参数
+	String flightNum = params.containsKey("flightNum") ? (String) params.get("flightNum") : "";
+	String airline = params.containsKey("airline") ? (String) params.get("airline") : "";
+	String startStation = params.containsKey("startStation") ? (String) params.get("startStation") : "";
+	String destStation = params.containsKey("destStation") ? (String) params.get("destStation") : "";
+	String startTime = params.containsKey("startTime") ? (String) params.get("startTime") : "";
+	String arriveTime = params.containsKey("arriveTime") ? (String) params.get("arriveTime") : "";
+	String planeType = params.containsKey("planeType") ? (String) params.get("planeType") : "";
+	int pageIndex = (int) params.get("pageIndex");    // 第几页
+	int pageSize = (int) params.get("pageSize");    // 每页几条数据
+	int startIndex = pageIndex * pageSize;// mysql 数据库中 limit 的第一个参数
 
 	int total = flightInfoDao.getFlightInfosCount(flightNum, airline, startStation, destStation, startTime, arriveTime, planeType);
 	List<FlightInfo> flightInfos = flightInfoDao.getFlightInfos(flightNum, airline, startStation, destStation, startTime, arriveTime, planeType, startIndex, pageSize);
@@ -66,24 +73,41 @@ public class FlightInfoController {
   }
 
   @RequestMapping(value = "/flightInfo/del", method = RequestMethod.POST)
-  public HashMap<String, Object> delFlightInfo(@RequestBody Map<String, String> params) {
-    String id = params.get("id");
-    Optional<FlightInfo> flightInfoOp = flightInfoDao.findById(id);
-    if (!flightInfoOp.isPresent()) {
-      HashMap<String, Object> res = new HashMap<>();
-      res.put("code", 1);
-      res.put("msg", "删除失败，找不到信息");
+  public HashMap<String, Object> delFlightInfo(@RequestBody HashMap<String, String> params) {
+	String id = params.get("id");
+	Optional<FlightInfo> flightInfoOp = flightInfoDao.findById(id);
+	if (!flightInfoOp.isPresent()) {
+	  HashMap<String, Object> res = new HashMap<>();
+	  res.put("code", 1);
+	  res.put("msg", "删除失败，找不到信息");
 	  return res;
 	}
 
-    FlightInfo flightInfo = flightInfoOp.get();
-    flightInfo.setState(0);
-    flightInfoDao.save(flightInfo);
+	FlightInfo flightInfo = flightInfoOp.get();
+	flightInfo.setState(0);
+	flightInfoDao.save(flightInfo);
 
 	HashMap<String, Object> res = new HashMap<>();
 	res.put("code", 0);
 	res.put("msg", "success");
 	return res;
+  }
+
+  @RequestMapping(value = "/flightInfo/exportExcel", method = RequestMethod.GET)
+  public void exportExcel(HttpServletResponse response) {
+	String fileName = "航班信息.xlsx";
+	List<FlightInfo> list = flightInfoDao.findAll();
+
+	try {
+	  response.setContentType("application/octet-stream");
+	  response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+	  OutputStream os = new BufferedOutputStream(response.getOutputStream());
+	  ExcelUtil.writeFlightInfosExcel(fileName, list, os);
+	  os.flush();
+	  os.close();
+	} catch (IOException e) {
+	  e.printStackTrace();
+	}
   }
 
 }
