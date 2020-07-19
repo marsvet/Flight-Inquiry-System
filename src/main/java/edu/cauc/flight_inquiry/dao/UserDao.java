@@ -10,4 +10,6 @@ public interface UserDao extends JpaRepository<User, String>, JpaSpecificationEx
 
   public Optional<User> findByEmail(String email);
 
+  public boolean existsByEmail(String email);
+
 }

@@ -2,7 +2,6 @@ package edu.cauc.flight_inquiry.controller;
 
 
 import edu.cauc.flight_inquiry.dao.FlightInfoDao;
-import edu.cauc.flight_inquiry.po.Airport;
 import edu.cauc.flight_inquiry.po.FlightInfo;
 import edu.cauc.flight_inquiry.util.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +57,8 @@ public class FlightInfoController {
 	String planeType = params.containsKey("planeType") ? (String) params.get("planeType") : "";
 	int pageIndex = (int) params.get("pageIndex");    // 第几页
 	int pageSize = (int) params.get("pageSize");    // 每页几条数据
-	int startIndex = pageIndex * pageSize;// mysql 数据库中 limit 的第一个参数
+//	int startIndex = pageIndex * pageSize;// mysql 数据库中 limit 的第一个参数
+	int startIndex = pageIndex;// mysql 数据库中 limit 的第一个参数
 
 	int total = flightInfoDao.getFlightInfosCount(flightNum, airline, startStation, destStation, startTime, arriveTime, planeType);
 	List<FlightInfo> flightInfos = flightInfoDao.getFlightInfos(flightNum, airline, startStation, destStation, startTime, arriveTime, planeType, startIndex, pageSize);
