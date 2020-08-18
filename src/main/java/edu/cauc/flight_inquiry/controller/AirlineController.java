@@ -59,12 +59,11 @@ public class AirlineController {
 	String twoCode = params.containsKey("twoCode") ? (String) params.get("twoCode") : "";
 	String threeCode = params.containsKey("threeCode") ? (String) params.get("threeCode") : "";
 	String airlineType = params.containsKey("airlineType") ? (String) params.get("airlineType") : "";
-	int pageIndex = (int) params.get("pageIndex");
-	int pageSize = (int) params.get("pageSize");
-	int startIndex = pageIndex * pageSize;
+	int limit = (int) params.get("limit");
+	int offset = params.get("offset") == null ? ((int) params.get("page") - 1) * limit : (int) params.get("offset");
 
 	int total = airlineDao.getAirlinesCount(zhSimpleName, enSimpleName, zhFullName, enFullName, twoCode, threeCode, airlineType);
-	List<Airline> airlines = airlineDao.getAirlines(zhSimpleName, enSimpleName, zhFullName, enFullName, twoCode, threeCode, airlineType, startIndex, pageSize);
+	List<Airline> airlines = airlineDao.getAirlines(zhSimpleName, enSimpleName, zhFullName, enFullName, twoCode, threeCode, airlineType, offset, limit);
 
 	HashMap<String, Object> res = new HashMap<>();
 	res.put("code", 0);
@@ -99,6 +98,14 @@ public class AirlineController {
   @RequestMapping(value = "/airline/importExcel", method = RequestMethod.POST)
   public HashMap<String, Object> importExcel(@RequestParam("file") MultipartFile file) {
 	String fileName = file.getOriginalFilename();
+
+	if (!(fileName.endsWith("xls") || fileName.endsWith("xlsx"))) {
+	  HashMap<String, Object> res = new HashMap<>();
+	  res.put("code", 1);
+	  res.put("msg", "不支持此文件格式");
+	  return res;
+	}
+
 	InputStream is = null;
 	try {
 	  is = file.getInputStream();

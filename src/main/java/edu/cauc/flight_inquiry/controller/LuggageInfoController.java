@@ -3,13 +3,18 @@ package edu.cauc.flight_inquiry.controller;
 
 import edu.cauc.flight_inquiry.dao.LuggageInfoDao;
 import edu.cauc.flight_inquiry.po.LuggageInfo;
+import edu.cauc.flight_inquiry.util.ExcelUtil;
 import edu.cauc.flight_inquiry.util.XMLUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -60,13 +65,11 @@ public class LuggageInfoController {
 	String turnNum = params.containsKey("turnNum") ? (String) params.get("turnNum") : "";
 	String terminal = params.containsKey("terminal") ? (String) params.get("terminal") : "";
 	String flightType = params.containsKey("flightType") ? (String) params.get("flightType") : "";
-	int pageIndex = (int) params.get("pageIndex");
-	int pageSize = (int) params.get("pageSize");
-//	int startIndex = pageIndex * pageSize;
-	int startIndex = pageIndex;
+	int limit = (int) params.get("limit");
+	int offset = params.get("offset") == null ? ((int) params.get("page") - 1) * limit : (int) params.get("offset");
 
 	int total = luggageInfoDao.getLuggageInfosCount(flightNum, realStartTime, realEndTime, luggageNum, turnNum, terminal, flightType);
-	List<LuggageInfo> luggageInfos = luggageInfoDao.getLuggageInfos(flightNum, realStartTime, realEndTime, luggageNum, turnNum, terminal, flightType, startIndex, pageSize);
+	List<LuggageInfo> luggageInfos = luggageInfoDao.getLuggageInfos(flightNum, realStartTime, realEndTime, luggageNum, turnNum, terminal, flightType, offset, limit);
 
 	HashMap<String, Object> res = new HashMap<>();
 	res.put("code", 0);
@@ -104,6 +107,14 @@ public class LuggageInfoController {
   @RequestMapping(value = "/luggageInfo/parseXML", method = RequestMethod.POST)
   public HashMap<String, Object> parseXML(@RequestParam("file") MultipartFile file) {
 	String fileName = file.getOriginalFilename();
+
+	if (!fileName.endsWith("xml")) {
+	  HashMap<String, Object> res = new HashMap<>();
+	  res.put("code", 1);
+	  res.put("msg", "不支持此文件格式");
+	  return res;
+	}
+
 	InputStream is = null;
 	List<HashMap<String, String>> list = null;
 
@@ -147,6 +158,23 @@ public class LuggageInfoController {
 	map.put("msg", "success");
 	map.put("data", list);
 	return map;
+  }
+
+  @RequestMapping(value = "/luggageInfo/exportExcel", method = RequestMethod.GET)
+  public void exportExcel(HttpServletResponse response) {
+	String fileName = "行李信息.xlsx";
+	List<LuggageInfo> list = luggageInfoDao.findAll();
+
+	try {
+	  response.setContentType("application/octet-stream");
+	  response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+	  OutputStream os = new BufferedOutputStream(response.getOutputStream());
+	  ExcelUtil.writeLuggageInfosExcel(fileName, list, os);
+	  os.flush();
+	  os.close();
+	} catch (IOException e) {
+	  e.printStackTrace();
+	}
   }
 
 }

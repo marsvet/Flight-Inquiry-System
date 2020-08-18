@@ -1,6 +1,8 @@
 package edu.cauc.flight_inquiry.po;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,9 +37,13 @@ public class FlightInfo {
   @Column(name = "dest_terminal")
   private String destTerminal;
 
+  @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
   @Column(name = "start_time")
   private Date startTime;
 
+  @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
   @Column(name = "arrive_time")
   private Date arriveTime;
 

@@ -9,10 +9,10 @@ import java.util.List;
 
 public interface FlightInfoDao extends JpaRepository<FlightInfo, String>, JpaSpecificationExecutor<FlightInfo> {
 
-  @Query(value = "SELECT * FROM flight_info WHERE flight_num LIKE CONCAT('%', ?, '%') AND airline LIKE CONCAT('%', ?, '%') AND start_station LIKE CONCAT('%', ?, '%') AND dest_station LIKE CONCAT('%', ?, '%') AND start_time LIKE CONCAT('%', ?, '%') AND arrive_time LIKE CONCAT('%', ?, '%') AND plane_type LIKE CONCAT('%', ?, '%') AND state = 1 LIMIT ?, ?", nativeQuery = true)
-  public List<FlightInfo> getFlightInfos(String flightNum, String airline, String startStation, String destStation, String startTime, String arriveTime, String planeType, int startIndex, int pageSize);
+  @Query(value = "SELECT * FROM flight_info WHERE flight_num LIKE CONCAT('%', ?, '%') AND airline LIKE CONCAT('%', ?, '%') AND start_station LIKE CONCAT('%', ?, '%') AND dest_station LIKE CONCAT('%', ?, '%') AND (start_time LIKE CONCAT('%', ?, '%') OR start_time IS NULL) AND (arrive_time LIKE CONCAT('%', ?, '%') OR arrive_time IS NULL) AND plane_type LIKE CONCAT('%', ?, '%') AND state = 1 LIMIT ?, ?", nativeQuery = true)
+  public List<FlightInfo> getFlightInfos(String flightNum, String airline, String startStation, String destStation, String startTime, String arriveTime, String planeType, int offset, int limit);
 
-  @Query(value = "SELECT COUNT(*) FROM flight_info WHERE flight_num LIKE CONCAT('%', ?, '%') AND airline LIKE CONCAT('%', ?, '%') AND start_station LIKE CONCAT('%', ?, '%') AND dest_station LIKE CONCAT('%', ?, '%') AND start_time LIKE CONCAT('%', ?, '%') AND arrive_time LIKE CONCAT('%', ?, '%') AND plane_type LIKE CONCAT('%', ?, '%') AND state = 1", nativeQuery = true)
+  @Query(value = "SELECT COUNT(*) FROM flight_info WHERE flight_num LIKE CONCAT('%', ?, '%') AND airline LIKE CONCAT('%', ?, '%') AND start_station LIKE CONCAT('%', ?, '%') AND dest_station LIKE CONCAT('%', ?, '%') AND (start_time LIKE CONCAT('%', ?, '%') OR start_time IS NULL) AND (arrive_time LIKE CONCAT('%', ?, '%') OR arrive_time IS NULL) AND plane_type LIKE CONCAT('%', ?, '%') AND state = 1", nativeQuery = true)
   public int getFlightInfosCount(String flightNum, String airline, String startStation, String destStation, String startTime, String arriveTime, String planeType);
 
 }

@@ -55,13 +55,14 @@ public class FlightInfoController {
 	String startTime = params.containsKey("startTime") ? (String) params.get("startTime") : "";
 	String arriveTime = params.containsKey("arriveTime") ? (String) params.get("arriveTime") : "";
 	String planeType = params.containsKey("planeType") ? (String) params.get("planeType") : "";
-	int pageIndex = (int) params.get("pageIndex");    // 第几页
-	int pageSize = (int) params.get("pageSize");    // 每页几条数据
-//	int startIndex = pageIndex * pageSize;// mysql 数据库中 limit 的第一个参数
-	int startIndex = pageIndex;// mysql 数据库中 limit 的第一个参数
+	int limit = (int) params.get("limit");
+	int offset = params.get("offset") == null ? ((int) params.get("page") - 1) * limit : (int) params.get("offset");
 
 	int total = flightInfoDao.getFlightInfosCount(flightNum, airline, startStation, destStation, startTime, arriveTime, planeType);
-	List<FlightInfo> flightInfos = flightInfoDao.getFlightInfos(flightNum, airline, startStation, destStation, startTime, arriveTime, planeType, startIndex, pageSize);
+	List<FlightInfo> flightInfos = flightInfoDao.getFlightInfos(flightNum, airline, startStation, destStation, startTime, arriveTime, planeType, offset, limit);
+	for (FlightInfo flightInfo : flightInfos) {
+	  System.out.println(flightInfo.getArriveTime());
+	}
 
 	HashMap<String, Object> res = new HashMap<>();
 	res.put("code", 0);

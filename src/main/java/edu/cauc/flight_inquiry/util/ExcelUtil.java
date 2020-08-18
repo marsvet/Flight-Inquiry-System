@@ -3,6 +3,7 @@ package edu.cauc.flight_inquiry.util;
 import edu.cauc.flight_inquiry.po.Airline;
 import edu.cauc.flight_inquiry.po.Airport;
 import edu.cauc.flight_inquiry.po.FlightInfo;
+import edu.cauc.flight_inquiry.po.LuggageInfo;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -13,7 +14,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -214,4 +214,46 @@ public class ExcelUtil {
 	}
   }
 
+  public static void writeLuggageInfosExcel(String fileName, List<LuggageInfo> list, OutputStream os) {
+
+	String titleRow[] = {"航班号", "实际开始使用时间", "实际结束使用时间", "行李号", "转盘号", "航站楼", "航班属性"};
+
+	try {
+	  Workbook workbook = null;
+
+	  if (fileName.endsWith("xls")) {
+		workbook = new HSSFWorkbook();
+	  } else {
+		workbook = new XSSFWorkbook();
+	  }
+
+	  Sheet sheet = workbook.createSheet();
+
+	  // 创建第一行（表格头）
+	  Row row = sheet.createRow(0);
+	  for (int i = 0; i < titleRow.length; i++) {
+		Cell cell = row.createCell(i);
+		cell.setCellValue(titleRow[i]);
+	  }
+
+	  // 创建其他行
+	  for (int i = 0; i < list.size(); i++) {
+		LuggageInfo luggageInfo = list.get(i);
+		row = sheet.createRow(i + 1);
+		row.createCell(0).setCellValue(luggageInfo.getFlightNum());
+		row.createCell(1).setCellValue(luggageInfo.getRealStartTime() == null ? null : luggageInfo.getRealStartTime().toString());
+		row.createCell(2).setCellValue(luggageInfo.getRealEndTime() == null ? null :luggageInfo.getRealEndTime().toString());
+		row.createCell(3).setCellValue(luggageInfo.getLuggageNum());
+		row.createCell(4).setCellValue(luggageInfo.getTurnNum());
+		row.createCell(5).setCellValue(luggageInfo.getTerminal());
+		row.createCell(6).setCellValue(luggageInfo.getFlightType());
+	  }
+
+	  workbook.write(os);
+
+	} catch (Exception e) {
+	  e.printStackTrace();
+	}
+
+  }
 }

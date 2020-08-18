@@ -11,7 +11,7 @@ import java.util.Properties;
 public class MailUtil {
 
   private static String senderAccount = "1358044937@qq.com";	// 发件人邮箱
-  private static String senderPassword = "lgtwkslkgpkdghjf";	// 发件人密码
+  private static String senderPassword = "xxxxxx";	// 发件人密码
   private static String senderName = "民航信息查询系统";
   private static String smtpHost = "smtp.qq.com";
   private static String smtpPort = "465";
